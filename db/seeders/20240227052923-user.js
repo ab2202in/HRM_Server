@@ -25,8 +25,8 @@ module.exports = {
       {
         _id: "65dd792357bafc18dba412f5",
         name: "aadhi",
-        email : "aadhi007@gmail.com"
-        
+        email : "aadhi007@gmail.com",
+        password : "$2a$12$mNybG4QHRJPHN6vQ5ab1dOiFZvFbVgorNqEMemgOQOh8CIH37onyq"
       }
     ])
   },

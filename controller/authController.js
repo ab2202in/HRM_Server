@@ -1,6 +1,6 @@
-const success_function = require("../utils/response-handler").success_function;
-const error_function = require("../utils/response-handler").error_function;
-const bcrypt = require("bcryptjs");
+const success_function = require("../utils/response_handler").success_function;
+const error_function = require("../utils/response_handler").error_function;
+const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 

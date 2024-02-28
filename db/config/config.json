@@ -1,4 +1,4 @@
-module.exports={
+{
   "development": {
     "database": {
       "url": "mongodb://localhost/mongoose_dev",
