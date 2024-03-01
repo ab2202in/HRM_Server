@@ -8,9 +8,9 @@ module.exports = {
       _id : "65dd74c80697c4fa67d003dd",
 
       
-        name : "john",
-        email : 'john@gmail.com',
-        password : "$2a$12$0gY8ytInp36Mef90KKKnpOWNhT789TunW/bMwayE2fSUvLod3/7v6",
+        name : "abin",
+        email : 'abin@gmail.com',
+        password : "$2a$12$AEbNZfai5E6otzyyHKW6auQGa1eT9hZN/itftVpHxhh603fVD6B3.",
 
     }
   ])

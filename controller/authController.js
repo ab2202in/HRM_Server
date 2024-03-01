@@ -1,81 +1,88 @@
-const success_function = require("../utils/response_handler").success_function;
-const error_function = require("../utils/response_handler").error_function;
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
+let success_function = require('../utils/response-handler').success_function;
+const error_function = require('../utils/response-handler').error_function;
+let jwt = require('jsonwebtoken');
+let bcrypt =require('bcryptjs')
+let dotenv =require ('dotenv');
+const { response } = require('express');
+const users = require('../db/models/users');
+dotenv.config();
 
 
-exports.login = async function (req, res) {
+exports.login = async function (req,res){
     try {
         let email = req.body.email;
-        let password = req.body.password;
+        console.log("email : ", email);
 
-        if (email && password) {
-            let user = await users.findOne({email});
+       let password =req.body.password;
+       console.log("password : ", password);
 
-            let user_type = user.user_type.user_type;
-            if (user) {
-                bcrypt.compare(password, user.password, async (error, auth) => {
-                    if (auth === true) {
-                        let access_token = jwt.sign(
-                            { user_id: user._id },
-                            process.env.PRIVATE_KEY,
-                            { expiresIn: "1d" }
-                        );
-                        let response = success_function({
-                            status: 200,
-                            data: access_token,
-                            message: "Login Successful",
-                        });
+       
 
-                        response.user_type = user_type;
-                        res.status(response.statusCode).send(response);
-                        return;
-                    } else {
-                        let response = error_function({
-                            status: 401,
-                            message: "Invalid Credentials",
-                        });
+       if(!email) {
+        let response = error_function({
+            statusCode : 400,
+            message : "email is Required"
+        });
+        res.status(response.statusCode).send(response);
+        return;
+       }
+       if (!password) {
+        let response = error_function({
+            statusCode : 400,
+            message : "Password is Required"
+        });
+        res.status(response.statusCode).send(response);
+        return;
+       }
+       let user = await users.findOne({ email });
+       console.log("user : ",user)
 
-                        res.status(response.statusCode).send(response);
-                        return;
-                    }
-                });
-            }
-        } else {
-            if (!email) {
-                let response = error_function({
-                    status: 422,
-                    message: "Email is required",
-                });
-                res.status(response.statusCode).send(response);
-                return;
-            }
-            if (!password) {
-                let response = error_function({
-                    status: 422,
-                    message: "Password is required",
-                });
-                res.status(response.statusCode).send(response);
-                return;
-            }
-        }
-    } catch (error) {
-        if (process.env.NODE_ENV == "production") {
-            let response = error_function({
-                status: 400,
-                message: error
-                    ? error.message
-                        ? error.message
-                        : error
-                    : "Something went wrong",
+       if (user) {
+
+        let db_password = user.password;
+
+        console.log("db_password : ",db_password);
+
+        bcrypt.compare(password,db_password,(err,auth)=>{
+            if(auth===true){
+                const access_token = jwt.sign({
+                    user_id:user.user_id},process.env.PRIVATE_KEY, {expiresIn: "1d"});
+                    console.log("access_token : ",access_token);
+
+                    let response = success_function({
+                        statusCode : 200,
+                        data : access_token,
+                        message : "Login Successful"
+                    });
+                    res.status(response.statusCode).send(response);
+                    
+                    return ;
+
+                }else{
+                    let response = error_function({
+                        statusCode : 400,
+                        message : "Invalid Password"
+                    });
+                    res.status(response.statusCode).send(response);
+                    return ;
+                }
             });
-
-            res.status(response.statusCode).send(response);
-            return;
         } else {
-            let response = error_function({ status: 400, message: error });
+            let response = error_function({
+                statusCode: 400,
+                message: "User not found"
+            });
             res.status(response.statusCode).send(response);
             return;
         }
+    }catch (error) {
+        console.log("error : ",error);
+        let response = error_function({
+            statusCode : 400,
+            message : error.message ? error.message : error,
+        });
+       res.status(response.statusCode).send(response);
+       return;
+
     }
-};
+}
